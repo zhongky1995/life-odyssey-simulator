@@ -13,14 +13,14 @@ const BRAND = {
 };
 
 const GENERIC_TITLES = new Set([
-  '我的职场奥德赛',
-  '三条可能的五年路线',
-  '三条职业路线',
-  '探索职业的无限可能',
+  '我的人生奥德赛',
+  '三种可能的人生',
+  '三种人生路线',
+  '探索人生的无限可能',
   '遇见更好的自己',
   '勇敢开启人生新篇章',
-  '重新定义我的职业可能',
-  '看见职业的更多可能',
+  '重新定义我的人生可能',
+  '看见人生的更多可能',
   '找到属于自己的答案',
   '写给未来的自己',
 ]);
@@ -123,12 +123,12 @@ function textBlock({ x, y, lines, size, lineHeight, weight = 500, fill = BRAND.b
   return `<g>${textLines.join('')}</g>`;
 }
 
-function routeCard(route, index) {
+function versionCard(version, index) {
   const colors = [BRAND.orangeRed, BRAND.hopeOrange, BRAND.coral];
   const pale = ['#FFF0EA', '#FFF3DE', '#FFECEF'];
   const y = 432 + index * 198;
-  const nameLines = wrap(route.name, 13, 1, `routes[${index}].name`);
-  const summaryLines = wrap(route.summary, 24, 2, `routes[${index}].summary`);
+  const nameLines = wrap(version.name, 13, 1, `versions[${index}].name`);
+  const summaryLines = wrap(version.summary, 24, 2, `versions[${index}].summary`);
 
   return `
   <g>
@@ -140,9 +140,9 @@ function routeCard(route, index) {
     ${textBlock({ x: 151, y: y + 86, lines: summaryLines, size: 23, lineHeight: 30, weight: 500, fill: BRAND.brown, opacity: 0.68 })}
 
     <rect x="151" y="${y + 122}" width="392" height="38" rx="19" fill="${pale[index]}"/>
-    ${textBlock({ x: 170, y: y + 148, lines: [`我想要｜${compact(route.gain)}`], size: 18, lineHeight: 22, weight: 650, fill: colors[index] })}
+    ${textBlock({ x: 170, y: y + 148, lines: [`我想要｜${compact(version.gain)}`], size: 18, lineHeight: 22, weight: 650, fill: colors[index] })}
     <rect x="559" y="${y + 122}" width="435" height="38" rx="19" fill="#F7F2EE"/>
-    ${textBlock({ x: 578, y: y + 148, lines: [`要承担｜${compact(route.cost)}`], size: 18, lineHeight: 22, weight: 600, fill: BRAND.brown, opacity: 0.72 })}
+    ${textBlock({ x: 578, y: y + 148, lines: [`要承担｜${compact(version.cost)}`], size: 18, lineHeight: 22, weight: 600, fill: BRAND.brown, opacity: 0.72 })}
   </g>`;
 }
 
@@ -154,15 +154,15 @@ function validate(data) {
   assert(data.share_safe === true, 'share_safe must be true before rendering');
   wrapBalanced(data.title, 14, 2, 'title');
 
-  assert(Array.isArray(data.routes) && data.routes.length === 3, 'routes must contain exactly three routes');
-  data.routes.forEach((route, index) => {
+  assert(Array.isArray(data.versions) && data.versions.length === 3, 'versions must contain exactly three life versions');
+  data.versions.forEach((version, index) => {
     ['name', 'summary', 'gain', 'cost'].forEach((key) => {
-      assert(compact(route[key]), `routes[${index}].${key} is required`);
+      assert(compact(version[key]), `versions[${index}].${key} is required`);
     });
-    wrap(route.name, 13, 1, `routes[${index}].name`);
-    wrap(route.summary, 24, 2, `routes[${index}].summary`);
-    assert(visibleLength(route.gain) <= 16, `routes[${index}].gain is too long; max 16 visible characters`);
-    assert(visibleLength(route.cost) <= 18, `routes[${index}].cost is too long; max 18 visible characters`);
+    wrap(version.name, 13, 1, `versions[${index}].name`);
+    wrap(version.summary, 24, 2, `versions[${index}].summary`);
+    assert(visibleLength(version.gain) <= 16, `versions[${index}].gain is too long; max 16 visible characters`);
+    assert(visibleLength(version.cost) <= 18, `versions[${index}].cost is too long; max 18 visible characters`);
   });
 
   assert(compact(data.insight), 'insight is required');
@@ -197,7 +197,7 @@ function main() {
   const logoHref = `data:image/svg+xml;base64,${logo.toString('base64')}`;
   const titleLines = wrapBalanced(data.title, 14, 2, 'title');
   const insightLines = wrapBalanced(data.insight, 21, 3, 'insight');
-  const eyebrow = compact(data.eyebrow || '职场奥德赛');
+  const eyebrow = compact(data.eyebrow || '人生奥德赛');
 
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1440" viewBox="0 0 1080 1440" role="img" aria-label="${escapeXml(data.title)}">
   <rect width="1080" height="1440" fill="${BRAND.ivory}"/>
@@ -209,12 +209,12 @@ function main() {
 
   ${textBlock({ x: 58, y: 205, lines: titleLines, size: 56, lineHeight: 72, weight: 760 })}
   <line x1="58" y1="365" x2="1022" y2="365" stroke="${BRAND.brown}" stroke-opacity="0.12"/>
-  ${textBlock({ x: 58, y: 407, lines: ['三种走法'], size: 20, lineHeight: 26, weight: 700, fill: BRAND.brown, opacity: 0.5 })}
+  ${textBlock({ x: 58, y: 407, lines: ['三种生活'], size: 20, lineHeight: 26, weight: 700, fill: BRAND.brown, opacity: 0.5 })}
 
-  ${data.routes.map(routeCard).join('\n')}
+  ${data.versions.map(versionCard).join('\n')}
 
   <rect x="58" y="1048" width="964" height="276" rx="34" fill="${BRAND.brown}"/>
-  ${textBlock({ x: 92, y: 1098, lines: ['不管走哪条，我都在意'], size: 20, lineHeight: 26, weight: 700, fill: BRAND.hopeOrange })}
+  ${textBlock({ x: 92, y: 1098, lines: ['不管怎么选，我都在意'], size: 20, lineHeight: 26, weight: 700, fill: BRAND.hopeOrange })}
   ${textBlock({ x: 92, y: 1172, lines: insightLines, size: 34, lineHeight: 50, weight: 650, fill: BRAND.ivory })}
 
   </svg>`;
